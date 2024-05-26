@@ -12,10 +12,89 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 import logging
+import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-logger = logging.getLogger(__name__)
+
+
+cur_path = os.path.dirname(os.path.realpath(__file__))  # log_path是存放日志的路径
+log_path = os.path.join(os.path.dirname(cur_path), 'logs')
+if not os.path.exists(log_path): os.mkdir(log_path)  # 如果不存在这个logs文件夹，就自动创建一个
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,
+    'formatters': {
+        # 日志格式
+        'standard': {
+            'format': '[%(asctime)s] [%(filename)s:%(lineno)d] [%(module)s:%(funcName)s] '
+                      '[%(levelname)s]- %(message)s'},
+        'simple': {  # 简单格式
+            'format': '%(levelname)s %(message)s'
+        },
+    },
+    # 过滤
+    'filters': {
+    },
+    # 定义具体处理日志的方式
+    'handlers': {
+        # 默认记录所有日志
+        'default': {
+            'level': 'INFO',
+            'class': 'concurrent_log_handler.ConcurrentRotatingFileHandler',
+            # 'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(log_path, 'all.log'),
+            'maxBytes': 1024 * 1024 * 1,  # 文件大小
+            'backupCount': 5,  # 备份数
+            'formatter': 'standard',  # 输出格式
+            'encoding': 'utf-8',  # 设置默认编码，否则打印出来汉字乱码
+        },
+        # 输出错误日志
+        'error': {
+            'level': 'ERROR',
+            # 'class': 'logging.handlers.RotatingFileHandler',
+            'class': 'concurrent_log_handler.ConcurrentRotatingFileHandler',
+            'filename': os.path.join(log_path, 'error.log'),
+            'maxBytes': 1024 * 1024 * 1,  # 文件大小
+            'backupCount': 5,  # 备份数
+            'formatter': 'standard',  # 输出格式
+            'encoding': 'utf-8',  # 设置默认编码
+        },
+        # 控制台输出
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'standard'
+        },
+        # 输出info日志
+        'info': {
+            'level': 'INFO',
+            # 'class': 'logging.handlers.RotatingFileHandler',
+            'class': 'concurrent_log_handler.ConcurrentRotatingFileHandler',
+            'filename': os.path.join(log_path, 'info.log'),
+            'maxBytes': 1024 * 1024 * 1,
+            'backupCount': 5,
+            'formatter': 'standard',
+            'encoding': 'utf-8',  # 设置默认编码
+        },
+    },
+    # 配置用哪几种 handlers 来处理日志
+    'loggers': {
+        # 类型 为 django 处理所有类型的日志， 默认调用
+        'django': {
+            'handlers': ['default', 'console'],
+            'level': 'INFO',
+            'propagate': False
+        },
+        # # log 调用时需要当作参数传入
+        'log': {
+            'handlers': ['error', 'info', 'console', 'default'],
+            'level': 'INFO',
+            'propagate': True
+        },
+    }
+}
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
@@ -119,3 +198,80 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# celery settings
+
+# Broker配置，使用Redis作为消息中间件
+# BROKER_URL = 'redis://192.168.1.109:6379/0'
+BROKER_URL = 'amqp://admin:123456@192.168.1.109:5672/myRabbit'
+# BACKEND配置，这里使用redis
+# CELERY_RESULT_BACKEND = 'redis://192.168.1.109:6379/0'
+CELERY_RESULT_BACKEND = 'amqp://admin:123456@192.168.1.109:5672/myRabbit'
+
+CELERY_TASK_SERIALIZER = 'json'
+# 结果序列化方案
+CELERY_RESULT_SERIALIZER = 'json'
+
+# 任务结果过期时间，秒
+CELERY_TASK_RESULT_EXPIRES = 60 * 60 * 24
+
+# 时区配置
+CELERY_TIMEZONE = 'Asia/Shanghai'
+
+# 指定导入的任务模块，可以指定多个
+# CELERY_IMPORTS = (
+#    'other_dir.tasks',
+# )
+
+from kombu import Queue, Exchange
+
+CELERY_DEFAULT_EXCHANGE = 'tasks'
+# exchange type可以看RabbitMQ中的相关内容
+CELERY_DEFAULT_EXCHANGE_TYPE = 'direct'
+
+CELERT_QUEUES = (
+  Queue('tasks', exchange='tasks', routing_key='tasks'),
+)
+"""
+该配置可以保证task不丢失，中断的task在下次启动时将会重新执行。
+task_reject_on_worker_lost作用是当worker进程意外退出时，task会被放回到队列中
+task_acks_late作用是只有当worker完成了这个task时，任务才被标记为ack状态
+"""
+task_reject_on_worker_lost = True
+task_acks_late = True
+
+# # celery worker的并发数，默认是服务器的内核数目,也是命令行-c参数指定的数目
+#  CELERYD_CONCURRENCY = 8
+#
+# # celery worker 每次去BROKER中预取任务的数量-
+# worker_prefetch_multiplier = 10
+#
+# # 每个worker执行了多少任务就会死掉，默认是无限的,释放内存
+# worker_max_tasks_per_child = 200
+#
+# # 非常重要,有些情况下可以防止死锁
+# worker_force_execv = True
+#
+# # 任务发出后，经过一段时间还未收到acknowledge , 就将任务重新交给其他worker执行
+# worker_disable_rate_limits = True
+#
+# # CELERY_TASK_DEFAULT_QUEUE = "default" # 默认队列
+# worker_task_default_queue = "default"
+#
+# from kombu import Queue
+# task_queues = (
+#     Queue("default", routing_key="default"),
+#     Queue("base", routing_key="base.#"),
+# )
+#
+# task_routes = {
+#
+#     # res = tasks.test.apply_async(queue='default', routing_key='default')
+#     # 以上如果指定队列执行，则下列指定方式失效
+#     "test": {'queue': 'base', 'routing_key': 'base.info'},
+#     # "test1": {'queue': 'base', 'routing_key': 'base.test'},
+# }
+# # 定义默认队列和默认的交换机routing_key
+# task_default_queue = 'default'
+# task_default_exchange = 'default'
+# task_default_routing_key = 'default'

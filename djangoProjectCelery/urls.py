@@ -17,6 +17,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
+from WalkingSun.views import CelerytestView, CeleryResultView
+
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('celerytask/', CelerytestView.as_view(), name="celery_test_view"),
+    path('celeryinfo/', CeleryResultView.as_view(), name="celery_result_view")
 ]
