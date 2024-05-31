@@ -24,14 +24,19 @@ class CelerytestView(View):
 
     def receive_task(self):
         infos = []
-        for i in range(1000):
+        for i in range(10):
             x, y = random.randint(0, 10), random.randint(0, 10)
-            t = add.delay(x, y, queue="tasks", routing_key="tasks")
+            # logger.info(i)
+            t = add.apply_async([x, y], retries=5)
+            # logger.info('finish')
+            # add.delay(x, y)
+            # infos.append(f"x:{x}, y:{y}")
+            # t = add.delay(x, y)
             t_id = t.task_id
             # task_ids.append(t_id)
             infos.append(f"task_id:{t_id},x:{x}, y:{y}")
         # res = json.dumps(task_ids)
-        logger.info('---')
+        # logger.info('---')
         logger.info(infos)
 
 

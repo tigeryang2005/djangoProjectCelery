@@ -25,15 +25,16 @@ class MyHookTask(Task):
 
 # 在对应的task函数的装饰器中，通过 base=MyHookTask 指定
 # @shared_task(base=MyHookTask, bind=True)
-@shared_task(base=MyHookTask, bind=True)
-def add(self, x, y):
+@shared_task(base=MyHookTask)
+def add(x, y):
     try:
-        n = random.randint(10, 20)
-        # time.sleep(n)
+        n = random.randint(1, 5)
+        time.sleep(n)
         # # task_id:{self.task_id},
-        # logger.info(f'任务延迟{n}秒')
+        logger.info(f'任务延迟{n}秒')
         # raise Exception
     except Exception as e:
         # 出错每4秒尝试一次，总共尝试4次
-        self.retry(exc=e, countdown=4, max_retries=4)
+        # self.retry(exc=e, countdown=4, max_retries=4)
+        logger.error(str(e))
     return x + y

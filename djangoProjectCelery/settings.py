@@ -203,14 +203,22 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Broker配置，使用Redis作为消息中间件
 # BROKER_URL = 'redis://192.168.1.109:6379/0'
-BROKER_URL = 'amqp://admin:123456@192.168.1.109:5672/myRabbit'
+BROKER_URL = 'amqp://admin:123456@192.168.76.128:5672//'
 # BACKEND配置，这里使用redis
-# CELERY_RESULT_BACKEND = 'redis://192.168.1.109:6379/0'
-CELERY_RESULT_BACKEND = 'amqp://admin:123456@192.168.1.109:5672/myRabbit'
+CELERY_RESULT_BACKEND = 'redis://192.168.76.128:6379/0'
+# CELERY_RESULT_BACKEND = 'amqp://admin:123456@192.168.1.109:5672//'
 
 CELERY_TASK_SERIALIZER = 'json'
 # 结果序列化方案
 CELERY_RESULT_SERIALIZER = 'json'
+
+# celery==4 需要的配置参数
+
+# CELERY_TASK_SERIALIZER = 'pickle'
+#
+# CELERY_RESULT_SERIALIZER = 'pickle'
+#
+# CELERY_ACCEPT_CONTENT = ['pickle', 'json']
 
 # 任务结果过期时间，秒
 CELERY_TASK_RESULT_EXPIRES = 60 * 60 * 24
@@ -223,15 +231,18 @@ CELERY_TIMEZONE = 'Asia/Shanghai'
 #    'other_dir.tasks',
 # )
 
-from kombu import Queue, Exchange
+# from kombu import Queue, Exchange
+#
+# CELERY_DEFAULT_EXCHANGE = 'tasks'
+# # exchange type可以看RabbitMQ中的相关内容
+# CELERY_DEFAULT_EXCHANGE_TYPE = 'direct'
+#
+# from kombu import Queue
+# CELERT_QUEUES = (
+#   Queue('my_queue', exchange='my_exchange', routing_key='my_routing_key'),
+# )
 
-CELERY_DEFAULT_EXCHANGE = 'tasks'
-# exchange type可以看RabbitMQ中的相关内容
-CELERY_DEFAULT_EXCHANGE_TYPE = 'direct'
 
-CELERT_QUEUES = (
-  Queue('tasks', exchange='tasks', routing_key='tasks'),
-)
 """
 该配置可以保证task不丢失，中断的task在下次启动时将会重新执行。
 task_reject_on_worker_lost作用是当worker进程意外退出时，task会被放回到队列中
@@ -249,19 +260,19 @@ task_acks_late = True
 # # 每个worker执行了多少任务就会死掉，默认是无限的,释放内存
 # worker_max_tasks_per_child = 200
 #
-# # 非常重要,有些情况下可以防止死锁
-# worker_force_execv = True
+# 非常重要,有些情况下可以防止死锁
+worker_force_execv = True
+
+# 任务发出后，经过一段时间还未收到acknowledge , 就将任务重新交给其他worker执行
+worker_disable_rate_limits = True
 #
-# # 任务发出后，经过一段时间还未收到acknowledge , 就将任务重新交给其他worker执行
-# worker_disable_rate_limits = True
-#
-# # CELERY_TASK_DEFAULT_QUEUE = "default" # 默认队列
+# CELERY_TASK_DEFAULT_QUEUE = "default" # 默认队列
 # worker_task_default_queue = "default"
 #
 # from kombu import Queue
 # task_queues = (
-#     Queue("default", routing_key="default"),
-#     Queue("base", routing_key="base.#"),
+#     Queue("default", exchange="default", routing_key="default"),
+#     # Queue("base", routing_key="base.#"),
 # )
 #
 # task_routes = {
