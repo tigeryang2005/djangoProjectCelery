@@ -4,7 +4,7 @@ import threading
 
 from celery import result
 
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views import View
 from django.http import HttpResponse, JsonResponse
 
@@ -16,6 +16,21 @@ logger = logging.getLogger('log')
 
 # Create your views here.
 
+def index(request):
+    return render(request, 'index.html')
+
+
+def login(request):
+    if request.method == 'GET':
+        return render(request, 'login.html')
+    if request.method == 'POST':
+        if request.POST.get('user_name', '') == 'admin' and request.POST.get('password', '') == '123':
+            logger.info(request.POST)
+            return redirect('/index/')
+        else:
+            return render(request, 'login.html', {"error": "用户名或密码不正确"})
+
+
 class PhoneListView(View):
     def get(self, request):
         phone_list = [
@@ -25,6 +40,7 @@ class PhoneListView(View):
             {"id": 3, "phone": "188888888885", "city": "上海3"},
         ]
         return render(request, "phone_list.html", {"data": phone_list})
+
 
 class CelerytestView(View):
     def get(self, request, *args, **kwargs):

@@ -18,10 +18,13 @@ from django.contrib import admin
 from django.urls import path
 
 from WalkingSun.views import CelerytestView, CeleryResultView, PhoneListView
+from WalkingSun import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('celerytask/', CelerytestView.as_view(), name="celery_test_view"),
     path('celeryinfo/', CeleryResultView.as_view(), name="celery_result_view"),
     path('phone/list/', PhoneListView.as_view(), name="phone_list_view"),
+    path('index/', views.index),
+    path('login/', views.login),
 ]
