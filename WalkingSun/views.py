@@ -16,6 +16,16 @@ logger = logging.getLogger('log')
 
 # Create your views here.
 
+class PhoneListView(View):
+    def get(self, request):
+        phone_list = [
+            {"id": 1, "phone": "188888888888", "city": "上海1"},
+            {"id": 2, "phone": "188888888887", "city": "上海2"},
+            {"id": 3, "phone": "188888888886", "city": "上海3"},
+            {"id": 3, "phone": "188888888885", "city": "上海3"},
+        ]
+        return render(request, "phone_list.html", {"data": phone_list})
+
 class CelerytestView(View):
     def get(self, request, *args, **kwargs):
         thread_receive_task = threading.Thread(target=self.receive_task, args=())

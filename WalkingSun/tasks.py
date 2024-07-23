@@ -2,8 +2,8 @@ from celery import Task, shared_task
 import time
 import random
 import logging
-logger = logging.getLogger('log')
 
+logger = logging.getLogger('log')
 
 
 class MyHookTask(Task):

@@ -17,10 +17,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from WalkingSun.views import CelerytestView, CeleryResultView
+from WalkingSun.views import CelerytestView, CeleryResultView, PhoneListView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('celerytask/', CelerytestView.as_view(), name="celery_test_view"),
-    path('celeryinfo/', CeleryResultView.as_view(), name="celery_result_view")
+    path('celeryinfo/', CeleryResultView.as_view(), name="celery_result_view"),
+    path('phone/list/', PhoneListView.as_view(), name="phone_list_view"),
 ]

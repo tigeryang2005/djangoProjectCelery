@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="/static/bootstrap-5.0.0-beta1-dist/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container" >
+       <h1>号码列表</h1>
+        <table class="table table-bordered border-1">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>手机号</th>
+                <th>归属地</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for d in data %}
+                <tr>
+                <td>{{ d.id }}</td>
+                <td>{{ d.phone }}</td>
+                <td>{{ d.city }}</td>
+                </tr>
+            {% endfor %}
+
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
