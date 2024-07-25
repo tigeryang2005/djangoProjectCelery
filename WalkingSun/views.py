@@ -17,7 +17,13 @@ logger = logging.getLogger('log')
 # Create your views here.
 
 def index(request):
-    return render(request, 'index.html')
+    phone_list = [
+        {"id": 1, "phone": "188888888888", "city": "上海1"},
+        {"id": 2, "phone": "188888888887", "city": "上海2"},
+        {"id": 3, "phone": "188888888886", "city": "上海3"},
+        {"id": 3, "phone": "188888888885", "city": "上海3"},
+    ]
+    return render(request, 'index.html', {"phone_list": phone_list})
 
 
 def login(request):
