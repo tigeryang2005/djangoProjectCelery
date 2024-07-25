@@ -7,8 +7,7 @@
 .env/
 
 # 忽略数据库文件
-db.sqlite3
-
+identifier.sqlite
 # 忽略日志文件
 *.log
 
@@ -99,7 +98,6 @@ cover/
 # Django stuff:
 *.log
 local_settings.py
-db.sqlite3
 db.sqlite3-journal
 
 # Flask stuff:
@@ -204,3 +202,4 @@ cython_debug/
 /celerybeat-schedule.dat
 /celerybeat-schedule.dir
 /logs/
+/identifier.sqlite
