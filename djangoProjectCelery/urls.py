@@ -27,4 +27,5 @@ urlpatterns = [
     path('phone/list/', PhoneListView.as_view(), name="phone_list_view"),
     path('index/', views.index),
     path('login/', views.login),
+    path('department/', views.department),
 ]

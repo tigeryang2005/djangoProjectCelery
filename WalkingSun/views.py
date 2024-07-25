@@ -1,20 +1,24 @@
-import json
+import logging
 import random
 import threading
 
 from celery import result
-
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.views import View
-from django.http import HttpResponse, JsonResponse
 
+from WalkingSun import models
 from WalkingSun.tasks import add
-import logging
 
 logger = logging.getLogger('log')
 
 
 # Create your views here.
+def department(request):
+    models.Department.objects.create(title="销售部", count=10)
+    models.Department.objects.create(**{"title": "服务部", "count": 11})
+    return HttpResponse("执行成功")
+
 
 def index(request):
     phone_list = [
