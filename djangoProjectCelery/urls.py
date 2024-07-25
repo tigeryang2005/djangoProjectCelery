@@ -15,11 +15,11 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
 from django.contrib.staticfiles.views import serve
+from django.urls import path
 
-from WalkingSun.views import CelerytestView, CeleryResultView, PhoneListView
 from WalkingSun import views
+from WalkingSun.views import CelerytestView, CeleryResultView, PhoneListView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -29,5 +29,6 @@ urlpatterns = [
     path('index/', views.index),
     path('login/', views.login),
     path('department/', views.department),
+    path('department/add/', views.department_add),
     path('favicon.ico', serve, {'path': 'images/favicon.ico'}),
 ]

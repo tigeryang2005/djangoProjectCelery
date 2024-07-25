@@ -3,10 +3,11 @@ import random
 import threading
 
 from celery import result
+from django.db import transaction
+from django.forms.models import model_to_dict
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.views import View
-from django.forms.models import model_to_dict
 
 from WalkingSun import models
 from WalkingSun.tasks import add
@@ -15,6 +16,19 @@ logger = logging.getLogger('log')
 
 
 # Create your views here.
+@transaction.atomic
+def department_add(request):
+    if request.method == 'GET':
+        return render(request, 'department_add.html')
+    if request.method == 'POST':
+        logger.info(request.POST)
+        title = request.POST.get('title', '')
+        count = request.POST.get('count', 0)
+        new_department = models.Department.objects.create(title=title, count=count)
+        logger.info(model_to_dict(new_department))
+        return redirect('/department/')
+
+
 def department(request):
     # models.Department.objects.create(title="销售部", count=10)
     # models.Department.objects.create(**{"title": "服务部", "count": 11})
