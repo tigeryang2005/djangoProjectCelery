@@ -7,15 +7,31 @@ from django.db import transaction
 from django.forms.models import model_to_dict
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
+from django.urls import reverse_lazy
 from django.views import View
+from django.views.generic import DeleteView
 
 from WalkingSun import models
+from WalkingSun.models import Department
 from WalkingSun.tasks import add
 
 logger = logging.getLogger('log')
 
 
 # Create your views here.
+
+class DepartmentDeleteView(DeleteView):
+    model = Department
+    template_name = 'department_delete.html'
+    success_url = reverse_lazy("department_list")
+
+    def post(self, request, *args, **kwargs):
+        department_dict = model_to_dict(self.get_object())
+        response = super().post(request, *args, **kwargs)
+        logger.info(f"已删除的department: {department_dict}")
+        return response
+
+
 @transaction.atomic
 def department_add(request):
     if request.method == 'GET':
@@ -36,11 +52,9 @@ def department(request):
     # departments = models.Department.objects.all()
     # departments = models.Department.objects.filter(id__gt=1)
     departments = models.Department.objects.all().order_by('-id')
-    for department in departments:
-        print(department.id, department.title, department.count)
-        department_dict = model_to_dict(department)
-        print(department_dict)
-        print(department_dict.get('name', '无'))
+    # for department in departments:
+    #     department_dict = model_to_dict(department)
+    #     logger.info(department_dict)
 
     # department = models.Department.objects.filter(id=1).first()
     # print(department.id, department.title, department.count)

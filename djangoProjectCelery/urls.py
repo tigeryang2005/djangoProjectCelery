@@ -19,7 +19,7 @@ from django.contrib.staticfiles.views import serve
 from django.urls import path
 
 from WalkingSun import views
-from WalkingSun.views import CelerytestView, CeleryResultView, PhoneListView
+from WalkingSun.views import CelerytestView, CeleryResultView, PhoneListView, DepartmentDeleteView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -28,7 +28,8 @@ urlpatterns = [
     path('phone/list/', PhoneListView.as_view(), name="phone_list_view"),
     path('index/', views.index),
     path('login/', views.login),
-    path('department/', views.department),
+    path('department/', views.department, name='department_list'),
     path('department/add/', views.department_add),
+    path('department/delete/<int:pk>', DepartmentDeleteView.as_view(), name='department_delete'),
     path('favicon.ico', serve, {'path': 'images/favicon.ico'}),
 ]

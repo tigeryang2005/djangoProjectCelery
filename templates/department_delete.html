@@ -1,0 +1,26 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>删除部门</title>
+    <link rel="stylesheet" href="{% static 'bootstrap-5.0.0-beta1-dist/css/bootstrap.min.css' %}">
+</head>
+<body>
+<div class="container py-4">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">删除部门</h3>
+        </div>
+        <div class="card-body">
+            <p>您确定要删除 "{{ department.title }}" 吗？</p>
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary btn-sm">删除</button>
+                <a href="{% url 'department_list' %}?success=true" class="btn btn-secondary btn-sm">取消</a>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

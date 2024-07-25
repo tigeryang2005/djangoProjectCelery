@@ -63,6 +63,7 @@
                 <td>{{ d.id }}</td>
                 <td>{{ d.title }}</td>
                 <td>{{ d.count }}</td>
+                <td><a href="{% url 'department_delete' d.id %}">删除</a></td>
             </tr>
         {% endfor %}
         </tbody>
