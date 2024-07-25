@@ -19,8 +19,9 @@ def department(request):
     # models.Department.objects.create(title="销售部", count=10)
     # models.Department.objects.create(**{"title": "服务部", "count": 11})
 
-    departments = models.Department.objects.all()
+    # departments = models.Department.objects.all()
     # departments = models.Department.objects.filter(id__gt=1)
+    departments = models.Department.objects.all().order_by('-id')
     for department in departments:
         print(department.id, department.title, department.count)
         department_dict = model_to_dict(department)
@@ -35,7 +36,7 @@ def department(request):
     # models.Department.objects.filter(id=1).delete()
     #
     # models.Department.objects.filter(id=2).update(count=99)
-    return HttpResponse("执行成功")
+    return render(request, 'department.html', {'departments': departments})
 
 
 def index(request):
