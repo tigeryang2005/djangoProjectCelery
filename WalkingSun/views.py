@@ -6,6 +6,7 @@ from celery import result
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.views import View
+from django.forms.models import model_to_dict
 
 from WalkingSun import models
 from WalkingSun.tasks import add
@@ -15,8 +16,25 @@ logger = logging.getLogger('log')
 
 # Create your views here.
 def department(request):
-    models.Department.objects.create(title="销售部", count=10)
-    models.Department.objects.create(**{"title": "服务部", "count": 11})
+    # models.Department.objects.create(title="销售部", count=10)
+    # models.Department.objects.create(**{"title": "服务部", "count": 11})
+
+    departments = models.Department.objects.all()
+    # departments = models.Department.objects.filter(id__gt=1)
+    for department in departments:
+        print(department.id, department.title, department.count)
+        department_dict = model_to_dict(department)
+        print(department_dict)
+        print(department_dict.get('name', '无'))
+
+    # department = models.Department.objects.filter(id=1).first()
+    # print(department.id, department.title, department.count)
+    # department = models.Department.objects.get(id=2)
+    # print(department.id, department.title, department.count)
+    #
+    # models.Department.objects.filter(id=1).delete()
+    #
+    # models.Department.objects.filter(id=2).update(count=99)
     return HttpResponse("执行成功")
 
 
