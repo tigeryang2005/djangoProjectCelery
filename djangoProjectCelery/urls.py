@@ -16,6 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.contrib.staticfiles.views import serve
 
 from WalkingSun.views import CelerytestView, CeleryResultView, PhoneListView
 from WalkingSun import views
@@ -28,4 +29,5 @@ urlpatterns = [
     path('index/', views.index),
     path('login/', views.login),
     path('department/', views.department),
+    path('favicon.ico', serve, {'path': 'images/favicon.ico'}),
 ]
