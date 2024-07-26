@@ -30,6 +30,10 @@ urlpatterns = [
     path('login/', views.login),
     path('department/', views.department, name='department_list'),
     path('department/add/', views.department_add),
-    path('department/delete/<int:pk>', DepartmentDeleteView.as_view(), name='department_delete'),
     path('favicon.ico', serve, {'path': 'images/favicon.ico'}),
+    path('department/list/', views.DepartmentListView.as_view(), name='department_list1'),
+    path('department/<int:pk>/', views.DepartmentDetailView.as_view(), name='department_detail'),
+    path('department/add1/', views.DepartmentCreateView.as_view(), name='department_add'),
+    path('department/update/<int:pk>/', views.DepartmentUpdateView.as_view(), name='department_edit'),
+    path('department/delete/<int:pk>', DepartmentDeleteView.as_view(), name='department_delete'),
 ]

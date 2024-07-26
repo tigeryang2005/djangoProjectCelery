@@ -3,13 +3,14 @@ import random
 import threading
 
 from celery import result
+from django.core import serializers
 from django.db import transaction
 from django.forms.models import model_to_dict
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views import View
-from django.views.generic import DeleteView
+from django.views.generic import DeleteView, ListView, DetailView, CreateView, UpdateView
 
 from WalkingSun import models
 from WalkingSun.models import Department
@@ -20,12 +21,76 @@ logger = logging.getLogger('log')
 
 # Create your views here.
 
+class DepartmentListView(ListView):
+    model = Department
+    template_name = 'department_list.html'
+    context_object_name = 'departments'
+    ordering = ['-id']
+
+    def get(self, request, *args, **kwargs):
+        logger.info(request)
+        response = super().get(request, *args, **kwargs)
+        departments = self.get_queryset()
+        logger.info(serializers.serialize('json', departments))
+        return response
+
+
+class DepartmentDetailView(DetailView):
+    model = Department
+    template_name = 'department_detail.html'
+    context_object_name = 'department'
+
+    def get(self, request, *args, **kwargs):
+        logger.info(request)
+        response = super().get(request, *args, **kwargs)
+        logger.info(serializers.serialize('json', [self.get_object()]))
+        return response
+
+
+class DepartmentCreateView(CreateView):
+    model = Department
+    fields = ['title', 'count']
+    template_name = 'department_edit.html'
+    success_url = reverse_lazy('department_list1')
+
+    def form_valid(self, form):
+        # form.instance.created_by = self.request.user
+        # form.instance.updated_by = self.request.user
+        logger.info(form.cleaned_data)
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form_title'] = "新增部门"
+        context['form_text'] = "新增"
+        return context
+
+
+class DepartmentUpdateView(UpdateView):
+    model = Department
+    fields = ['title', 'count']
+    template_name = 'department_edit.html'
+    success_url = reverse_lazy('department_list1')
+
+    def form_valid(self, form):
+        # form.instance.update_by = self.request.user
+        logger.info(form.cleaned_data)
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['form_title'] = "编辑部门"
+        context['form_text'] = "保存"
+        return context
+
+
 class DepartmentDeleteView(DeleteView):
     model = Department
     template_name = 'department_delete.html'
-    success_url = reverse_lazy("department_list")
+    success_url = reverse_lazy("department_list1")
 
     def post(self, request, *args, **kwargs):
+        logger.info(request)
         department_dict = model_to_dict(self.get_object())
         response = super().post(request, *args, **kwargs)
         logger.info(f"已删除的department: {department_dict}")

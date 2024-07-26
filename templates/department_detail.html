@@ -1,0 +1,38 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>部门列表</title>
+    <link rel="stylesheet" href="{% static 'bootstrap-5.0.0-beta1-dist/css/bootstrap.min.css' %}">
+</head>
+<body>
+<div class="container py-4">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">{{ department.title }}</h3>
+        </div>
+        <div class="card-body">
+            <ul class="list-group">
+                <li class="list-group-item"><strong>ID：</strong>{{ department.id }}</li>
+                <li class="list-group-item"><strong>部门名称：</strong>{{ department.title }}</li>
+                <li class="list-group-item"><strong>人数：</strong>
+                    {#                        {% if department.count %}#}
+                    {#                        <a href="{% url 'department_detail' department.id %}">#}
+                    {#                            {{ department.count }}</a>#}
+                    {#                        {% else %}#}
+                    {#                        {% endif %}#}
+                    {{ department.count }}
+                </li>
+                <li class="list-group-item">
+                    <a href="{% url 'department_edit' department.id %}" class="btn btn-success btn-sm">编辑</a>
+                    <a href="{% url 'department_delete' department.id %}" class="btn btn-danger btn-sm">删除</a>
+                    <a href="{% url 'department_list1' %}?success=true" class="btn btn-secondary btn-sm">返回</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<script src="{% static 'bootstrap-5.0.0-beta1-dist/js/bootstrap.bundle.min.js' %}"></script>
+</body>
+</html>
