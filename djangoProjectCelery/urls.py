@@ -27,7 +27,7 @@ urlpatterns = [
     path('celeryinfo/', CeleryResultView.as_view(), name="celery_result_view"),
     path('phone/list/', PhoneListView.as_view(), name="phone_list_view"),
     path('index/', views.index),
-    path('login/', views.login),
+    path('login/', views.login_custom),
     path('department/', views.department, name='department_list'),
     path('department/add/', views.department_add),
     path('favicon.ico', serve, {'path': 'images/favicon.ico'}),

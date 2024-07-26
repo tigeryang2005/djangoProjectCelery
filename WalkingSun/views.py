@@ -3,6 +3,7 @@ import random
 import threading
 
 from celery import result
+from django.contrib.auth import authenticate, login
 from django.core import serializers
 from django.db import transaction
 from django.forms.models import model_to_dict
@@ -142,13 +143,15 @@ def index(request):
     return render(request, 'index.html', {"phone_list": phone_list})
 
 
-def login(request):
+def login_custom(request):
     if request.method == 'GET':
         return render(request, 'login.html')
     if request.method == 'POST':
-        if request.POST.get('user_name', '') == 'admin' and request.POST.get('password', '') == '123':
-            logger.info(request.POST)
-            return redirect('/index/')
+        logger.info(request.POST)
+        user = authenticate(username=request.POST.get('user_name'), password=request.POST.get('password'))
+        if user:
+            login(request, user)
+            return redirect('department_list1')
         else:
             return render(request, 'login.html', {"error": "用户名或密码不正确"})
 
