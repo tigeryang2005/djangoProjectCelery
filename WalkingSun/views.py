@@ -4,6 +4,7 @@ import threading
 
 from celery import result
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core import serializers
 from django.db import transaction
 from django.forms.models import model_to_dict
@@ -22,7 +23,7 @@ logger = logging.getLogger('log')
 
 # Create your views here.
 
-class DepartmentListView(ListView):
+class DepartmentListView(LoginRequiredMixin, ListView):
     model = Department
     template_name = 'department_list.html'
     context_object_name = 'departments'
@@ -36,7 +37,7 @@ class DepartmentListView(ListView):
         return response
 
 
-class DepartmentDetailView(DetailView):
+class DepartmentDetailView(LoginRequiredMixin, DetailView):
     model = Department
     template_name = 'department_detail.html'
     context_object_name = 'department'
@@ -48,7 +49,7 @@ class DepartmentDetailView(DetailView):
         return response
 
 
-class DepartmentCreateView(CreateView):
+class DepartmentCreateView(LoginRequiredMixin, CreateView):
     model = Department
     fields = ['title', 'count']
     template_name = 'department_edit.html'
@@ -67,7 +68,7 @@ class DepartmentCreateView(CreateView):
         return context
 
 
-class DepartmentUpdateView(UpdateView):
+class DepartmentUpdateView(LoginRequiredMixin, UpdateView):
     model = Department
     fields = ['title', 'count']
     template_name = 'department_edit.html'
@@ -85,7 +86,7 @@ class DepartmentUpdateView(UpdateView):
         return context
 
 
-class DepartmentDeleteView(DeleteView):
+class DepartmentDeleteView(LoginRequiredMixin, DeleteView):
     model = Department
     template_name = 'department_delete.html'
     success_url = reverse_lazy("department_list1")
