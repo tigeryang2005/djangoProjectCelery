@@ -141,7 +141,11 @@ def index(request):
         {"id": 3, "phone": "188888888886", "city": "上海3"},
         {"id": 3, "phone": "188888888885", "city": "上海3"},
     ]
-    return render(request, 'index.html', {"phone_list": phone_list})
+
+    user_info = request.session.get("user_info", "")
+    if not user_info:
+        return redirect('login')
+    return render(request, 'index.html', {"phone_list": phone_list, "user_info": user_info})
 
 
 def login_custom(request):
@@ -152,6 +156,16 @@ def login_custom(request):
         user = authenticate(username=request.POST.get('user_name'), password=request.POST.get('password'))
         if user:
             login(request, user)
+            """
+                1.生成随机字符串
+                2.返回用户浏览器的cookie中
+                3.存储到网站的session中， 随机字符串+用户标识
+            """
+            request.session["user_info"] = {
+                "last_name": user.last_name,
+                "name": user.username,
+                "id": user.id
+            }
             return redirect('department_list1')
         else:
             return render(request, 'login.html', {"error": "用户名或密码不正确"})
