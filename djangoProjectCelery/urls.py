@@ -22,6 +22,7 @@ from WalkingSun import views
 from WalkingSun.views import CelerytestView, CeleryResultView, PhoneListView, DepartmentDeleteView
 
 urlpatterns = [
+    path('user/list/', views.UserListView.as_view(), name='user_list'),
     path('admin/', admin.site.urls),
     path('celerytask/', CelerytestView.as_view(), name="celery_test_view"),
     path('celeryinfo/', CeleryResultView.as_view(), name="celery_result_view"),

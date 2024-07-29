@@ -15,13 +15,27 @@ from django.views import View
 from django.views.generic import DeleteView, ListView, DetailView, CreateView, UpdateView
 
 from WalkingSun import models
-from WalkingSun.models import Department
+from WalkingSun.models import Department, UserProfile
 from WalkingSun.tasks import add
 
 logger = logging.getLogger('log')
 
 
 # Create your views here.
+
+class UserListView(LoginRequiredMixin, ListView):
+    model = UserProfile
+    template_name = 'user_list.html'
+    context_object_name = 'user_list'
+    ordering = ['-id']
+
+    def get(self, request, *args, **kwargs):
+        logger.info(request)
+        response = super().get(request, *args, **kwargs)
+        user_list = self.get_queryset()
+        logger.info(serializers.serialize('json', user_list))
+        return response
+
 
 class DepartmentListView(LoginRequiredMixin, ListView):
     model = Department

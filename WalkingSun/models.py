@@ -14,10 +14,15 @@ class Department(models.Model):
 
 
 class UserProfile(AbstractUser):
-    # name = models.CharField(max_length=100, verbose_name="姓名")
     age = models.IntegerField(verbose_name="年龄", default=0, blank=True)
     mobile = models.CharField(max_length=11, unique=True, verbose_name='手机号', blank=True)
+    department = models.ForeignKey(verbose_name='所在部门', to=Department, on_delete=models.CASCADE)
 
+    # department = models.ForeignKey(verbose_name='所在部门', to=Department, on_delete=models.SET_NULL, null=True,
+    # blank=True)
+    # department = models.ForeignKey(verbose_name='所在部门', to=Department, on_delete=models.SET_DEFAULT, default=1)
+
+    # name = models.CharField(max_length=100, verbose_name="姓名")
     # email = models.EmailField(verbose_name="邮箱")
     # 后期增加一列 第一种方法可以为空 null=True blank=Ture
     # 第二种方法 默认值 default='1111'
