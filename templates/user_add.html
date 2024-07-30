@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% block title %}
+    新增用户
+{% endblock %}
+{% block content %}
+    <h2>添加用户</h2>
+    <form class="row g-3" method="post" action="/user/add/">
+        {% csrf_token %}
+        <div class="col-md-6">
+            <label for="username" class="form-label">用户名：
+                <input type="text" placeholder="用户名称" name="username">
+            </label>
+        </div>
+        <div class="col-md-6">
+            <label for="password">密码：
+                <input type="password" placeholder="密码" name="password">
+            </label>
+        </div>
+        <div class="col-md-6">
+            <label>是否为超级用户：
+                <input type="checkbox" name="is_superuser" value="false">
+            </label>
+        </div>
+        <div class="col-md-6">
+            <label>姓：
+                <input type="text" placeholder="姓" name="last_name">
+            </label>
+        </div>
+        <div class="col-md-6">
+            <label>名：
+                <input type="text" placeholder="名" name="first_name">
+            </label>
+        </div>
+        <div class="col-md-6">
+            <label>邮箱：
+                <input type="email" placeholder="邮箱" name="email">
+            </label>
+        </div>
+        <div class="col-md-6">
+            <label>是否为成员：
+                <input class="checkbox-row" type="checkbox" name="is_staff" value="false">
+            </label>
+        </div>
+        <div class="col-md-6">
+            <label>是否在用：
+                <input class="checkbox-row" type="checkbox" aria-label="是否在用" name="is_active" value="true">
+
+
+            </label>
+        </div>
+        <div class="col-md-6">
+            <label>加入时间：
+                <input type="datetime-local" name="date_joined">
+            </label>
+        </div>
+        <div class="col-md-6">
+            <label>年龄：
+                <input type="number" name="age" placeholder="年龄">
+            </label>
+        </div>
+        <div class="col-md-6">
+            <label>电话：
+                <input type="tel" name="mobile" placeholder="电话">
+            </label>
+        </div>
+        <div class="col-md-6">
+            <label>部门
+                <select class="form-select" aria-label="部门" name="department">
+                    {% for department in departments %}
+                        <option value={{ department.id }}>{{ department.title }}</option>
+                    {% empty %}
+                        无数据
+                    {% endfor %}
+                </select>
+            </label>
+        </div>
+        <div class="button">
+            <input type="submit" value="提交">
+            <span style="color: red;">{{ form.errors }}</span>
+        </div>
+    </form>
+{% endblock %}

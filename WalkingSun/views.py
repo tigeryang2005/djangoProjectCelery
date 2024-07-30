@@ -23,6 +23,29 @@ logger = logging.getLogger('log')
 
 # Create your views here.
 
+class UserCreateView(LoginRequiredMixin, CreateView):
+    model = UserProfile
+    fields = ['password', 'last_login', 'is_superuser', 'username', 'first_name', 'last_name', 'email', 'is_staff',
+              'is_active', 'date_joined', 'age', 'mobile', 'department']
+    template_name = 'user_add.html'
+    success_url = reverse_lazy('user_list')
+
+    def post(self, request, *args, **kwargs):
+        logger.info(request.POST)
+        return super().post(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        # form.instance.created_by = self.request.user
+        # form.instance.updated_by = self.request.user
+        logger.info(form.cleaned_data)
+        return super().form_valid(form)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['departments'] = models.Department.objects.all()
+        return context
+
+
 class UserListView(LoginRequiredMixin, ListView):
     model = UserProfile
     template_name = 'user_list.html'
@@ -30,7 +53,7 @@ class UserListView(LoginRequiredMixin, ListView):
     ordering = ['-id']
 
     def get(self, request, *args, **kwargs):
-        logger.info(request)
+        logger.info(request.GET)
         response = super().get(request, *args, **kwargs)
         user_list = self.get_queryset()
         logger.info(serializers.serialize('json', user_list))

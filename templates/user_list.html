@@ -4,6 +4,9 @@
 {% endblock %}
 {% block content %}
     <div class="card mt-3">
+        <div style="margin-top: 16px;">
+            <a href="{% url 'user_add' %}" class="btn btn-primary btn-sm">添加用户</a>
+        </div>
         <div class="card-header">用户列表</div>
         <div class="card-body">
             <table class="table table-bordered">
