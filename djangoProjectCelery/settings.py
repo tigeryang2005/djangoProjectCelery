@@ -19,7 +19,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 cur_path = os.path.dirname(os.path.realpath(__file__))  # log_path是存放日志的路径
 log_path = os.path.join(os.path.dirname(cur_path), 'logs')
-if not os.path.exists(log_path): os.mkdir(log_path)  # 如果不存在这个logs文件夹，就自动创建一个
+if not os.path.exists(log_path):
+    os.mkdir(log_path)  # 如果不存在这个logs文件夹，就自动创建一个
 
 LOGGING = {
     'version': 1,
@@ -137,8 +138,7 @@ ROOT_URLCONF = 'djangoProjectCelery.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates']
-        ,
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -241,9 +241,8 @@ CELERY_TIMEZONE = 'Asia/Shanghai'
 # CELERY_DEFAULT_EXCHANGE_TYPE = 'direct'
 #
 # from kombu import Queue
-# CELERT_QUEUES = (
-#   Queue('my_queue', exchange='my_exchange', routing_key='my_routing_key'),
-# )
+# CELERY_QUEUES = (
+#   Queue('my_queue', exchange='my_exchange', routing_key='my_routing_key'))
 
 
 """
