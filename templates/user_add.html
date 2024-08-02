@@ -18,7 +18,7 @@
         </div>
         <div class="col-md-6">
             <label>是否为超级用户：
-                <input type="checkbox" name="is_superuser" value="false">
+                <input type="checkbox" name="is_superuser" value="1">
             </label>
         </div>
         <div class="col-md-6">
@@ -38,14 +38,12 @@
         </div>
         <div class="col-md-6">
             <label>是否为成员：
-                <input class="checkbox-row" type="checkbox" name="is_staff" value="false">
+                <input class="checkbox-row" type="checkbox" name="is_staff" value=1>
             </label>
         </div>
         <div class="col-md-6">
             <label>是否在用：
                 <input class="checkbox-row" type="checkbox" aria-label="是否在用" name="is_active" value="true">
-
-
             </label>
         </div>
         <div class="col-md-6">
@@ -77,6 +75,7 @@
         <div class="button">
             <input type="submit" value="提交">
             <span style="color: red;">{{ form.errors }}</span>
+            <span style="color: red">{{ user_errors }}</span>
         </div>
     </form>
 {% endblock %}

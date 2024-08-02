@@ -5,6 +5,7 @@ import threading
 from celery import result
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.models import User
 from django.core import serializers
 from django.db import transaction
 from django.forms.models import model_to_dict
@@ -15,6 +16,7 @@ from django.views import View
 from django.views.generic import DeleteView, ListView, DetailView, CreateView, UpdateView
 
 from WalkingSun import models
+from WalkingSun.forms import UserForm
 from WalkingSun.models import Department, UserProfile
 from WalkingSun.tasks import add
 
@@ -25,8 +27,8 @@ logger = logging.getLogger('log')
 
 class UserCreateView(LoginRequiredMixin, CreateView):
     model = UserProfile
-    fields = ['password', 'last_login', 'is_superuser', 'username', 'first_name', 'last_name', 'email', 'is_staff',
-              'is_active', 'date_joined', 'age', 'mobile', 'department']
+    # form_class = UserForm
+    fields = ['age', 'mobile', 'department']
     template_name = 'user_add.html'
     success_url = reverse_lazy('user_list')
 
@@ -37,12 +39,45 @@ class UserCreateView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         # form.instance.created_by = self.request.user
         # form.instance.updated_by = self.request.user
-        logger.info(form.cleaned_data)
-        return super().form_valid(form)
+        logger.info(self.request.POST)
+        user_dict = {}
+        dict_value_is_list_to_value_is_str(user_dict, self.request.POST.dict())
+        # form.cleaned_data.update(user_dict)
+        if not self.request.POST.get('is_superuser', ''):
+            user_dict['is_superuser'] = '0'
+        if not self.request.POST.get('is_staff', ''):
+            user_dict['is_staff'] = '0'
+        if not self.request.POST.get('is_active', ''):
+            user_dict['is_active'] = '0'
+        logger.info(user_dict)
+        user_form = UserForm(user_dict)
+        logger.info(user_form.data)
+        if user_form.is_valid():
+            with transaction.atomic():
+                user = User.objects.create_user(username=user_dict.get('username'), email=user_dict.get('email'),
+                                                password=user_dict.get('password'))
+                user.is_superuser = user_dict.get('is_superuser')
+                user.is_staff = user_dict.get('is_staff')
+                user.is_active = user_dict.get('is_active')
+                user.last_login = user_dict.get('last_login')
+                user.date_joined = user_dict.get('date_joined')
+                user.first_name = user_dict.get('first_name')
+                user.last_name = user_dict.get('last_name')
+                user.save()
+                form.instance.user_id = user.id
+                logger.info(form.cleaned_data)
+            return super().form_valid(form)
+        else:
+            user_errors = {}
+            dict_value_is_list_to_value_is_str(user_errors, user_form.errors)
+            self.kwargs.update({"user_errors": user_errors})
+            return super().form_invalid(form)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['departments'] = models.Department.objects.all()
+        context.update(self.kwargs)
+        logger.info(context)
         return context
 
 
@@ -93,7 +128,7 @@ class DepartmentCreateView(LoginRequiredMixin, CreateView):
     success_url = reverse_lazy('department_list1')
 
     def form_valid(self, form):
-        # form.instance.created_by = self.request.user
+        form.instance.created_by = self.request.user
         # form.instance.updated_by = self.request.user
         logger.info(form.cleaned_data)
         return super().form_valid(form)
@@ -256,3 +291,11 @@ class CeleryResultView(View):
         else:
             # print(ar.ready())
             return JsonResponse({'status': ar.state, 'result': ''})
+
+
+def dict_value_is_list_to_value_is_str(new_dict, old_dict):
+    for key, value in old_dict.items():
+        v_str = ''
+        for v in value:
+            v_str += v
+        new_dict[key] = v_str

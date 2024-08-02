@@ -1,4 +1,4 @@
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, User
 
 from django.db import models
 
@@ -8,12 +8,14 @@ from django.db import models
 class Department(models.Model):
     title = models.CharField(max_length=100, verbose_name="标题")
     count = models.IntegerField(verbose_name="人数")
+    created_by = models.ForeignKey(User, on_delete=models.SET_DEFAULT, default=1)
 
     class Meta:
         db_table = 'department'
 
 
-class UserProfile(AbstractUser):
+class UserProfile(models.Model):
+    user = models.OneToOneField(to=User, on_delete=models.CASCADE)
     age = models.IntegerField(verbose_name="年龄", default=0, blank=True)
     mobile = models.CharField(max_length=11, unique=True, verbose_name='手机号', blank=True)
     department = models.ForeignKey(verbose_name='所在部门', to=Department, on_delete=models.CASCADE)
